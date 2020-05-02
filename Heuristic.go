@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -36,13 +35,14 @@ var PieceValue = map[string]int{
 	"K2":  20,
 }
 
-func h(board [][]string) int {
-	var p1Value = scan(board, "1")
-	fmt.Println("p1value = ", p1Value)
-	var p2Value = scan(board, "2")
-	fmt.Println("p2value = ", p2Value)
-	h := p1Value - p2Value
-	return h
+func h1(board [][]string) int {
+	p1Value := scan(board, "1")
+	return p1Value
+}
+
+func h2(board [][]string) int {
+	p2Value := scan(board, "2")
+	return p2Value
 }
 
 func scan(board [][]string, player string) int {
