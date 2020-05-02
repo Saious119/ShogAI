@@ -101,6 +101,4 @@ func ExpectoMax(state ShogiState, depth int) (Move, error) {
 		}
 
 	}
-
-	return Move{}
 }
