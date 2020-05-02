@@ -23,6 +23,7 @@ func popList(list []ShogiState) []ShogiState {
 }
 
 func (state ShogiState) IsGoal() bool {
+	//please work on
 	return false
 }
 
