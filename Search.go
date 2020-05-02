@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type Pair struct {
 	x int
 	y int
@@ -16,7 +18,11 @@ type ShogiState struct {
 	parent *ShogiState
 }
 
-func (state ShogiState) atGoal() bool {
+func popList(list []ShogiState) []ShogiState {
+	return list[1:]
+}
+
+func (state ShogiState) IsGoal() bool {
 	return false
 }
 
@@ -33,28 +39,15 @@ func duplicate(state ShogiState) ShogiState {
 func (state ShogiState) Succ() []ShogiState {
 	var final []ShogiState
 	for i := 0; i < len(state.pieces); i++ {
-
+		//Scan through all pieces and appends all possible moves of all pieces to the final slice
 	}
 
 	return final
 }
 
-func reverseChain(state ShogiState) []ShogiState {
-	var final []ShogiState
-	curr := state
-	for curr.parent != nil {
-		final = append(final, curr)
-		curr = *(curr.parent)
-	}
-	if curr.parent == nil {
-		final = append(final, curr)
-	}
-
-	var ordered []ShogiState
-	for i := len(final) - 1; i >= 0; i-- {
-		ordered = append(ordered, final[i])
-	}
-	return ordered
+func getFirst(state ShogiState) Move {
+	//This should loop to follow the parent pointer to get the first move that led to this chain
+	return state
 }
 
 func (state ShogiState) Equal(s ShogiState) bool {
@@ -85,10 +78,29 @@ func (state ShogiState) Equal(s ShogiState) bool {
 	return true
 }
 
-func ExpectoMax(state ShogiState, depth int) Move {
-	// var final []ShogiState
+func ExpectoMax(state ShogiState, depth int) (Move, error) {
+	var final []ShogiState
 	var fringe []ShogiState
 	fringe = append(fringe, state)
+
+	for {
+		if len(fringe) == 0 {
+			return Move{}, fmt.Errorf("Sad boi")
+		}
+		node := fringe[0]
+		fringe = popList(fringe)
+
+		if node.IsGoal() && len(fringe) == 0 {
+			final = append(final, node)
+			return getFirst(final[len(final)-1]), nil
+		} else {
+			kids := node.Succ()
+			//Make some decisions here about the kids
+			fringe = append(kids, fringe...)
+			final = append(final, node)
+		}
+
+	}
 
 	return Move{}
 }
