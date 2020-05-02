@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 func InitBoard() [][]string { //creates a new board for a new game and prints it
 	NewBoard := [][]string{
 		{"L1", "N1", "S1", "G1", "K1", "G1", "S1", "N1", "L1"},
@@ -14,4 +16,13 @@ func InitBoard() [][]string { //creates a new board for a new game and prints it
 	}
 	//printBoard(NewBoard)
 	return NewBoard
+}
+
+func PrintBoard(board [][]string) { //prints the given board
+	for i := 0; i < len(board); i++ {
+		for j := 0; j < len(board[i]); j++ {
+			fmt.Print(" ", board[i][j])
+		}
+		fmt.Println()
+	}
 }
