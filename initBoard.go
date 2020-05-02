@@ -1,6 +1,6 @@
 package main
 
-func initBoard() [][]string { //creates a new board for a new game and prints it
+func InitBoard() [][]string { //creates a new board for a new game and prints it
 	NewBoard := [][]string{
 		{"L1", "N1", "S1", "G1", "K1", "G1", "S1", "N1", "L1"},
 		{"O", "R1", "O", "O", "O", "O", "O", "B1", "O"},

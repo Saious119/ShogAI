@@ -1,6 +1,6 @@
 package main
 
 func main() {
-	board := initBoard()
-	printBoard(board)
+	board := InitBoard()
+	PrintBoard(board)
 }
