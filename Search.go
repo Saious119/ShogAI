@@ -47,7 +47,7 @@ func (state ShogiState) Succ() []ShogiState {
 
 func getFirst(state ShogiState) Move {
 	//This should loop to follow the parent pointer to get the first move that led to this chain
-	return state
+	return Move{}
 }
 
 func (state ShogiState) Equal(s ShogiState) bool {
