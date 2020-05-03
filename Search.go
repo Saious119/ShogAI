@@ -50,24 +50,12 @@ func Succ(state ShogiState, player int) []ShogiState {
 		//Scan through all pieces and appends all possible moves of all pieces to the final slice
 		if OwnsPiece(state.pieces[i].name, player) {
 			switch state.pieces[i].name {
-			case "P1":
+			case "P1", "P2":
 				NewX := state.pieces[i].x + 0
 				NewY := state.pieces[i].y - 1
 				NewState := Pawn(state, player, NewX, NewY, i) //gives either a new state or if its invalid the same state
 				final = append(final, NewState)
-			case "P2":
-				NewX := state.pieces[i].x + 0
-				NewY := state.pieces[i].y - 1
-				NewState := Pawn(state, player, NewX, NewY, i) //gives either a new state or if its invalid the same state
-				final = append(final, NewState)
-			case "L1":
-				for j := state.pieces[i].y; j < len(state.board[0]); j++ {
-					NewX := state.pieces[i].x
-					NewY := j
-					NewState := Lance(state, player, NewX, NewY, i)
-					final = append(final, NewState)
-				}
-			case "L2":
+			case "L1", "L2":
 				for j := state.pieces[i].y; j < len(state.board[0]); j++ {
 					NewX := state.pieces[i].x
 					NewY := j
