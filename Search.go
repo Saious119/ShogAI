@@ -37,7 +37,9 @@ func duplicate(state ShogiState) ShogiState {
 		newBoard[i] = make([]string, len(state.board[i]))
 		copy(newBoard[i], state.board[i])
 	}
-	newState := ShogiState{board: newBoard, parent: state.parent}
+	newPieces := make([]Pair, len(state.pieces))
+	copy(newPieces, state.pieces)
+	newState := ShogiState{board: newBoard, pieces: newPieces, parent: state.parent}
 	return newState
 }
 
