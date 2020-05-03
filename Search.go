@@ -88,7 +88,7 @@ func Min(i, j int) int {
 	return j
 }
 
-func auxExpectiMax(state ShogiState, player, depth int, max bool) int {
+func auxMiniMax(state ShogiState, player, depth int, max bool) int {
 	if state.IsGoal() {
 		//Oh Mowie Wowie!
 		if max {
@@ -107,20 +107,20 @@ func auxExpectiMax(state ShogiState, player, depth int, max bool) int {
 		val := 0
 		kids := state.Succ()
 		for i := 0; i < len(kids); i++ {
-			val = Max(val, auxExpectiMax(kids[i], player, depth-1, false))
+			val = Max(val, auxMiniMax(kids[i], player, depth-1, false))
 		}
 		return val
 	} else {
 		val := 0
 		kids := state.Succ()
 		for i := 0; i < len(kids); i++ {
-			val = Min(val, auxExpectiMax(kids[i], player, depth-1, true))
+			val = Min(val, auxMiniMax(kids[i], player, depth-1, true))
 		}
 		return val
 	}
 }
 
-func ExpectiMax(state ShogiState, player, depth int) (Move, error) {
+func MiniMax(state ShogiState, player, depth int) (Move, error) {
 	//Totally untested, und highly dangerous! (waiting for Succ)
 	if state.IsGoal() {
 		return Move{}, fmt.Errorf("You won dufus! Email all your friends!")
@@ -129,7 +129,7 @@ func ExpectiMax(state ShogiState, player, depth int) (Move, error) {
 	kids := state.Succ()
 	var vals []int
 	for i := 0; i < len(kids); i++ {
-		val := auxExpectiMax(kids[i], player, depth-1, false)
+		val := auxMiniMax(kids[i], player, depth-1, false)
 		vals = append(vals, val)
 	}
 
