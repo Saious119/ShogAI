@@ -74,34 +74,6 @@ func getFirstMove(state ShogiState) Move {
 	return m
 }
 
-func (state ShogiState) Equal(s ShogiState) bool {
-	if len(state.board) != len(s.board) {
-		return false
-	}
-	for i := 0; i < len(state.board); i++ {
-		if len(state.board[i]) != len(s.board[i]) {
-			return false
-		}
-		for j := 0; j < len(state.board[i]); j++ {
-			if state.board[i][j] != s.board[i][j] {
-				return false
-			}
-		}
-	}
-
-	if len(state.pieces) != len(s.pieces) {
-		return false
-	}
-	for i := 0; i < len(state.pieces); i++ {
-		for j := 0; j < len(state.pieces); j++ {
-			if (state.pieces[i].x == state.pieces[j].x) != (s.pieces[i].y == s.pieces[j].y) {
-				return false
-			}
-		}
-	}
-	return true
-}
-
 func Max(i, j int) int {
 	if i > j {
 		return i
