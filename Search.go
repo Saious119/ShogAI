@@ -46,9 +46,32 @@ func (state ShogiState) Succ() []ShogiState {
 	return final
 }
 
-func getFirst(state ShogiState) Move {
-	//This should loop to follow the parent pointer to get the first move that led to this chain
-	return Move{}
+func diff(s1, s2 ShogiState) (Move, error) {
+	var m Move
+	for i := 0; i < len(s1.pieces); i++ {
+		if s1.pieces[i].x != s2.pieces[i].x || s1.pieces[i].y != s2.pieces[i].y {
+			m.curr = s1.pieces[i]
+			m.final = s2.pieces[i]
+			return m, nil
+		}
+	}
+	return m, fmt.Errorf("No diff! You're a liar! You promiced me!")
+}
+
+func getFirstMove(state ShogiState) Move {
+	//Totally untested and highly dangerous
+	curr := state
+	final := curr
+	for curr.parent != nil {
+		final = curr
+		curr = *(curr.parent)
+	}
+	m, err := diff(curr, final)
+	if err != nil {
+		panic("No move made, even though moves made! Someone call the Navy!")
+	}
+
+	return m
 }
 
 func (state ShogiState) Equal(s ShogiState) bool {
@@ -93,7 +116,7 @@ func ExpectoMax(state ShogiState, depth int) (Move, error) {
 
 		if node.IsGoal() && len(fringe) == 0 {
 			final = append(final, node)
-			return getFirst(final[len(final)-1]), nil
+			return getFirstMove(final[len(final)-1]), nil
 		} else {
 			kids := node.Succ()
 			//Make some decisions here about the kids
