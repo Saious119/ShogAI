@@ -102,27 +102,63 @@ func (state ShogiState) Equal(s ShogiState) bool {
 	return true
 }
 
-func ExpectoMax(state ShogiState, depth int) (Move, error) {
-	var final []ShogiState
-	var fringe []ShogiState
-	fringe = append(fringe, state)
-
-	for {
-		if len(fringe) == 0 {
-			return Move{}, fmt.Errorf("Sad boi")
-		}
-		node := fringe[0]
-		fringe = popList(fringe)
-
-		if node.IsGoal() && len(fringe) == 0 {
-			final = append(final, node)
-			return getFirstMove(final[len(final)-1]), nil
-		} else {
-			kids := node.Succ()
-			//Make some decisions here about the kids
-			fringe = append(kids, fringe...)
-			final = append(final, node)
-		}
-
+func Max(i, j int) int {
+	if i > j {
+		return i
 	}
+	return j
+}
+
+func Min(i, j int) int {
+	if i < j {
+		return i
+	}
+	return j
+}
+
+func auxExpectiMax(state ShogiState, player, depth int, max bool) int {
+	if depth == 0 {
+		if player == 1 {
+			return h1(state.board)
+		} else {
+			return h2(state.board)
+		}
+	} else if max {
+		val := 0
+		kids := state.Succ()
+		for i := 0; i < len(kids); i++ {
+			val = Max(val, auxExpectiMax(kids[i], player, depth-1, false))
+		}
+		return val
+	} else {
+		val := 0
+		kids := state.Succ()
+		for i := 0; i < len(kids); i++ {
+			val = Min(val, auxExpectiMax(kids[i], player, depth-1, true))
+		}
+		return val
+	}
+}
+
+func ExpectiMax(state ShogiState, player, depth int) Move {
+	//Totally untested, und highly dangerous! (waiting for Succ)
+	kids := state.Succ()
+	var vals []int
+	for i := 0; i < len(kids); i++ {
+		val := auxExpectiMax(kids[i], player, depth-1, false)
+		vals = append(vals, val)
+	}
+
+	maximum := 0
+	for i := 0; i < len(vals); i++ {
+		if vals[i] > maximum {
+			maximum = i
+		}
+	}
+
+	m, err := diff(state, kids[maximum])
+	if err != nil {
+		panic("No move is max, this shouldn't be possible because maximum := 0")
+	}
+	return m
 }
