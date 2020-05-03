@@ -7,8 +7,9 @@ import (
 )
 
 type Pair struct {
-	x int
-	y int
+	x    int
+	y    int
+	name string
 }
 
 type Move struct {
