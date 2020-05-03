@@ -58,6 +58,10 @@ func Succ(state ShogiState, player int) []ShogiState {
 					state.board[state.pieces[i].x][state.pieces[i].y] = "O"
 					state.pieces[i].x = NewX //update piece
 					state.pieces[i].y = NewY
+					if CheckPromotion(NewY, state.pieces[i].name) {
+						state.board[NewX][NewY] = "P1+"
+						state.pieces[i].name = "P1+"
+					}
 				}
 			}
 		}
@@ -184,4 +188,40 @@ func IsValid(board [][]string, NewX int, NewY int, player int) bool {
 		return false
 	}
 	return true
+}
+
+func CheckPromotion(Newy int, piece string) bool {
+	if Newy > 5 {
+		switch piece {
+		case "P1":
+			return true
+		case "L1":
+			return true
+		case "N1":
+			return true
+		case "S1":
+			return true
+		case "B1":
+			return true
+		case "R1":
+			return true
+		}
+	}
+	if Newy < 4 {
+		switch piece {
+		case "P2":
+			return true
+		case "L2":
+			return true
+		case "N2":
+			return true
+		case "S2":
+			return true
+		case "B2":
+			return true
+		case "R2":
+			return true
+		}
+	}
+	return false
 }
