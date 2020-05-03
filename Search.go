@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 type Pair struct {
 	x int
@@ -145,4 +149,12 @@ func MiniMax(state ShogiState, player, depth int) (Move, error) {
 		panic("No move is max, this shouldn't be possible because maximum := 0")
 	}
 	return m, nil
+}
+
+func OwnsPiece(piece string, playerNum int) bool {
+	strPlayerNum := strconv.Itoa(playerNum)
+	if strings.Contains(piece, strPlayerNum) {
+		return true
+	}
+	return false
 }
