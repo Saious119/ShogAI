@@ -89,6 +89,14 @@ func Min(i, j int) int {
 }
 
 func auxExpectiMax(state ShogiState, player, depth int, max bool) int {
+	if state.IsGoal() {
+		//Oh Mowie Wowie!
+		if max {
+			return 9999
+		}
+		return -9999
+	}
+
 	if depth == 0 {
 		if player == 1 {
 			return h1(state.board)
@@ -112,8 +120,12 @@ func auxExpectiMax(state ShogiState, player, depth int, max bool) int {
 	}
 }
 
-func ExpectiMax(state ShogiState, player, depth int) Move {
+func ExpectiMax(state ShogiState, player, depth int) (Move, error) {
 	//Totally untested, und highly dangerous! (waiting for Succ)
+	if state.IsGoal() {
+		return Move{}, fmt.Errorf("You won dufus! Email all your friends!")
+	}
+
 	kids := state.Succ()
 	var vals []int
 	for i := 0; i < len(kids); i++ {
@@ -132,5 +144,5 @@ func ExpectiMax(state ShogiState, player, depth int) Move {
 	if err != nil {
 		panic("No move is max, this shouldn't be possible because maximum := 0")
 	}
-	return m
+	return m, nil
 }
