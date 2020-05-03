@@ -43,7 +43,7 @@ func duplicate(state ShogiState) ShogiState {
 	return newState
 }
 
-func (state ShogiState) Succ() []ShogiState {
+func (state ShogiState, player int) Succ() []ShogiState {
 	var final []ShogiState
 	for i := 0; i < len(state.pieces); i++ {
 		//Scan through all pieces and appends all possible moves of all pieces to the final slice
