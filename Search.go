@@ -44,10 +44,23 @@ func duplicate(state ShogiState) ShogiState {
 	return newState
 }
 
-func (state ShogiState, player int) Succ() []ShogiState {
+func Succ(state ShogiState, player int) []ShogiState {
 	var final []ShogiState
 	for i := 0; i < len(state.pieces); i++ {
 		//Scan through all pieces and appends all possible moves of all pieces to the final slice
+		if OwnsPiece(state.pieces[i].name, player) {
+			switch state.pieces[i].name {
+			case "P1":
+				NewX := state.pieces[i].x + 0
+				NewY := state.pieces[i].y - 1
+				if IsValid(state.board, NewX, NewY, player) { //check if its a valid move
+					state.board[NewX][NewY] = "P1" //update board
+					state.board[state.pieces[i].x][state.pieces[i].y] = "O"
+					state.pieces[i].x = NewX //update piece
+					state.pieces[i].y = NewY
+				}
+			}
+		}
 	}
 
 	return final
@@ -112,14 +125,14 @@ func auxMiniMax(state ShogiState, player, depth int, max bool) int {
 		}
 	} else if max {
 		val := 0
-		kids := state.Succ()
+		kids := Succ(state, player)
 		for i := 0; i < len(kids); i++ {
 			val = Max(val, auxMiniMax(kids[i], player, depth-1, false))
 		}
 		return val
 	} else {
 		val := 0
-		kids := state.Succ()
+		kids := Succ(state, player)
 		for i := 0; i < len(kids); i++ {
 			val = Min(val, auxMiniMax(kids[i], player, depth-1, true))
 		}
@@ -133,7 +146,7 @@ func MiniMax(state ShogiState, player, depth int) (Move, error) {
 		return Move{}, fmt.Errorf("You won dufus! Email all your friends!")
 	}
 
-	kids := state.Succ()
+	kids := Succ(state, player)
 	var vals []int
 	for i := 0; i < len(kids); i++ {
 		val := auxMiniMax(kids[i], player, depth-1, false)
@@ -160,4 +173,15 @@ func OwnsPiece(piece string, playerNum int) bool {
 		return true
 	}
 	return false
+}
+
+func IsValid(board [][]string, NewX int, NewY int, player int) bool {
+	if strings.Contains(board[NewX][NewY], "K") {
+		return false
+	}
+	StrPlayer := strconv.Itoa(player)
+	if strings.Contains(board[NewX][NewY], StrPlayer) {
+		return false
+	}
+	return true
 }
