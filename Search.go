@@ -27,9 +27,60 @@ func popList(list []ShogiState) []ShogiState {
 	return list[1:]
 }
 
-func (state ShogiState) IsGoal() bool {
-	//please work on
-	return false
+func (state ShogiState) IsGoal() bool { //returns true if a player has won
+	NextBoard := Succ(state, 2)
+	NotAllCheck := true //not all future moves are in check
+	for i := 0; i < len(NextBoard); i++ {
+		if !Check(NextBoard[i], 1) { //do all of them involve 2 being in check
+			NotAllCheck = false //if not then theres a move to be made
+			break               //no need to keep searching
+		}
+	}
+	if !NotAllCheck { //all moves would still be check
+		fmt.Println("P2 Wins") //other player wins
+		return true
+	}
+	NextBoard = Succ(state, 1) //sees player 1's moves
+	for i := 0; i < len(NextBoard); i++ {
+		if !Check(NextBoard[i], 2) { //do all of them involve 2 being in check
+			NotAllCheck = false //if not then theres a move to be made
+			break
+		}
+	}
+	if !NotAllCheck {
+		fmt.Println("P1 Wins")
+		return true
+	}
+	return false //valid moves can still be made
+}
+
+func Check(state ShogiState, player int) bool { //returns true if player is in check
+	var opponent int
+	if player == 1 {
+		opponent = 2
+	}
+	if player == 2 {
+		opponent = 1
+	}
+	CurrBoard := Succ(state, opponent)
+	playerNum := strconv.Itoa(player)
+	YourKing := "K" + playerNum
+	FoundKingAll := true //found our king on all boards, no checks
+	for a := 0; a < len(CurrBoard); a++ {
+		FoundKingInBoard := false
+		for i := 0; i < len(CurrBoard[a].board[i]); i++ {
+			for j := 0; j < len(CurrBoard[a].board); j++ {
+				if CurrBoard[a].board[i][j] == YourKing {
+					FoundKingInBoard = true //found our king on this board
+					break
+				}
+			}
+		}
+		if FoundKingInBoard == false { //didn't find it in this board
+			FoundKingAll = false //there is a move where we are in check
+		}
+	}
+	return !FoundKingAll
 }
 
 func duplicate(state ShogiState) ShogiState {
@@ -340,9 +391,11 @@ func OwnsPiece(piece string, playerNum int) bool {
 }
 
 func IsValid(board [][]string, NewX int, NewY int, player int) bool {
-	if strings.Contains(board[NewX][NewY], "K") {
-		return false
-	}
+	/*
+		if strings.Contains(board[NewX][NewY], "K") {
+			return false
+		}
+	*/
 	StrPlayer := strconv.Itoa(player)
 	if strings.Contains(board[NewX][NewY], StrPlayer) {
 		return false
