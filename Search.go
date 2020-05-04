@@ -27,30 +27,28 @@ func popList(list []ShogiState) []ShogiState {
 	return list[1:]
 }
 
-func (state ShogiState) IsGoal() bool { //returns true if a player has won
-	NextBoard := Succ(state, 2)
+func IsGoal(state ShogiState, player int) bool { //returns true if a player has won
+	var opponent int
+	if player == 1 {
+		opponent = 2
+	}
+	if player == 2 {
+		opponent = 1
+	}
+	NextBoard := Succ(state, player)
 	NotAllCheck := true //not all future moves are in check
 	for i := 0; i < len(NextBoard); i++ {
-		if !Check(NextBoard[i], 1) { //do all of them involve 2 being in check
+		if !Check(NextBoard[i], opponent) { //do all of them involve 2 being in check
 			NotAllCheck = false //if not then theres a move to be made
 			break               //no need to keep searching
 		}
 	}
 	if !NotAllCheck { //all moves would still be check
-		fmt.Println("P2 Wins") //other player wins
+		strconv.Itoa(player)
+		fmt.Println("player" + player + "wins!") //other player wins
 		return true
 	}
-	NextBoard = Succ(state, 1) //sees player 1's moves
-	for i := 0; i < len(NextBoard); i++ {
-		if !Check(NextBoard[i], 2) { //do all of them involve 2 being in check
-			NotAllCheck = false //if not then theres a move to be made
-			break
-		}
-	}
-	if !NotAllCheck {
-		fmt.Println("P1 Wins")
-		return true
-	}
+
 	return false //valid moves can still be made
 }
 
@@ -450,6 +448,8 @@ func MakeMove(state ShogiState, player int, NewX int, NewY int, i int) ShogiStat
 	if IsValid(state.board, NewX, NewY, player) {
 		piece := state.pieces[i].name
 		state.board[NewX][NewY] = piece //update board
+		fmt.Println("OldX = ", state.pieces[i].x)
+		fmt.Println("OldY = ", state.pieces[i].y)
 		state.board[state.pieces[i].x][state.pieces[i].y] = "O"
 		state.pieces[i].x = NewX //update piece
 		state.pieces[i].y = NewY
