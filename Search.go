@@ -52,14 +52,122 @@ func Succ(state ShogiState, player int) []ShogiState {
 			switch state.pieces[i].name {
 			case "P1", "P2":
 				NewX := state.pieces[i].x + 0
-				NewY := state.pieces[i].y - 1
+				var NewY int
+				if strings.Contains(state.pieces[i].name, "1") {
+					NewY = state.pieces[i].y - 1
+				}
+				if strings.Contains(state.pieces[i].name, "2") {
+					NewY = state.pieces[i].y + 1
+				}
 				NewState := Pawn(state, player, NewX, NewY, i) //gives either a new state or if its invalid the same state
 				final = append(final, NewState)
-			case "L1", "L2":
+			case "L1":
 				for j := state.pieces[i].y; j < len(state.board[0]); j++ {
 					NewX := state.pieces[i].x
 					NewY := j
 					NewState := Lance(state, player, NewX, NewY, i)
+					final = append(final, NewState)
+					if state.board[NewX][NewY] != "O" {
+						break
+					}
+				}
+			case "L2":
+				for j := state.pieces[i].y; j >= 0; j-- {
+					NewX := state.pieces[i].x
+					NewY := j
+					NewState := Lance(state, player, NewX, NewY, i)
+					final = append(final, NewState)
+					if state.board[NewX][NewY] != "O" {
+						break
+					}
+				}
+			case "N1", "N2":
+				NewX := state.pieces[i].x - 1
+				var NewY int
+				if strings.Contains(state.pieces[i].name, "1") {
+					NewY = state.pieces[i].y - 2
+				}
+				if strings.Contains(state.pieces[i].name, "2") {
+					NewY = state.pieces[i].y + 2
+				}
+				NewState := Knight(state, player, NewX, NewY, i)
+				final = append(final, NewState)
+				NewY = state.pieces[i].x + 1
+				NewState = Knight(state, player, NewX, NewY, i)
+				final = append(final, NewState)
+			case "S1", "S2":
+				var moves []int
+				if strings.Contains(state.pieces[i].name, "1") {
+					moves = []int{-1, -1, 0, -1, 1, -1, -1, 1, 1, 1}
+				}
+				if strings.Contains(state.pieces[i].name, "1") {
+					moves = []int{-1, 1, 0, 1, 1, 1, -1, -1, 1, -1}
+				}
+				for j := 0; j <= len(moves)-2; j += 2 {
+					NewX := state.pieces[j].x + moves[j]
+					NewY := state.pieces[j].y + moves[j+1]
+					NewState := Silver(state, player, NewX, NewY, i)
+					final = append(final, NewState)
+				}
+			case "G1", "G2":
+				var moves []int
+				if strings.Contains(state.pieces[i].name, "1") {
+					moves = []int{-1, -1, 0, -1, 1, -1, 1, 0, -1, 0, 0, 1}
+				}
+				if strings.Contains(state.pieces[i].name, "1") {
+					moves = []int{-1, 1, 0, 1, 1, 1, 0, -1, 1, 0, 0, -1}
+				}
+				for j := 0; j <= len(moves)-2; j += 2 {
+					NewX := state.pieces[j].x + moves[j]
+					NewY := state.pieces[j].y + moves[j+1]
+					NewState := Gold(state, player, NewX, NewY, i)
+					final = append(final, NewState)
+				}
+			case "B1", "B2":
+				for j := 0; j < len(state.board); j++ {
+					NewX := state.pieces[i].x + j
+					NewY := state.pieces[i].y + j
+					NewState := Bishop(state, player, NewX, NewY, i)
+					final = append(final, NewState)
+					if state.board[NewX][NewY] != "O" {
+						break
+					}
+				}
+				for j := len(state.board); j >= 0; j-- {
+					NewX := state.pieces[i].x - j
+					NewY := state.pieces[i].y - j
+					NewState := Bishop(state, player, NewX, NewY, i)
+					final = append(final, NewState)
+					if state.board[NewX][NewY] != "O" {
+						break
+					}
+				}
+			case "R1", "R2":
+				for j := 0; j < len(state.board); j++ {
+					NewX := j
+					NewY := state.pieces[i].y
+					NewState := Rook(state, player, NewX, NewY, i)
+					final = append(final, NewState)
+					if state.board[NewX][NewY] != "O" {
+						break
+					}
+				}
+				for g := 0; g < len(state.board[0]); g++ {
+					NewX := state.pieces[i].x
+					NewY := g
+					NewState := Rook(state, player, NewX, NewY, i)
+					final = append(final, NewState)
+					if state.board[NewX][NewY] != "O" {
+						break
+					}
+				}
+			case "K1", "K2":
+				var moves []int
+				moves = []int{-1, -1, 0, -1, 1, -1, -1, 1, 1, 1, 1, 0, -1, 0, 0, 1}
+				for j := 0; j <= len(moves)-2; j += 2 {
+					NewX := state.pieces[j].x + moves[j]
+					NewY := state.pieces[j].y + moves[j+1]
+					NewState := King(state, player, NewX, NewY, i)
 					final = append(final, NewState)
 				}
 			}
@@ -183,6 +291,12 @@ func IsValid(board [][]string, NewX int, NewY int, player int) bool {
 	}
 	StrPlayer := strconv.Itoa(player)
 	if strings.Contains(board[NewX][NewY], StrPlayer) {
+		return false
+	}
+	if NewX > len(board[0]) || NewX < 0 {
+		return false
+	}
+	if NewY > len(board) || NewY < 0 {
 		return false
 	}
 	return true
