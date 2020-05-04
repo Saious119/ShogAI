@@ -27,7 +27,7 @@ func popList(list []ShogiState) []ShogiState {
 	return list[1:]
 }
 
-func IsGoal(state ShogiState, player int) bool { //returns true if a player has won
+func (state ShogiState) IsGoal(player int) bool { //returns true if a player has won
 	var opponent int
 	if player == 1 {
 		opponent = 2
@@ -340,7 +340,7 @@ func Min(i, j int) int {
 }
 
 func auxMiniMax(state ShogiState, player, depth int, max bool) int {
-	if state.IsGoal() {
+	if state.IsGoal(player) {
 		//Oh Mowie Wowie!
 		if max {
 			return 9999
@@ -373,7 +373,7 @@ func auxMiniMax(state ShogiState, player, depth int, max bool) int {
 
 func MiniMax(state ShogiState, player, depth int) (Move, error) {
 	//Totally untested, und highly dangerous! (waiting for Succ)
-	if state.IsGoal() {
+	if state.IsGoal(player) {
 		return Move{}, fmt.Errorf("You won dufus! Email all your friends!")
 	}
 
