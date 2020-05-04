@@ -44,8 +44,8 @@ func IsGoal(state ShogiState, player int) bool { //returns true if a player has 
 		}
 	}
 	if !NotAllCheck { //all moves would still be check
-		strconv.Itoa(player)
-		fmt.Println("player" + player + "wins!") //other player wins
+		PlayerNum := strconv.Itoa(player)
+		fmt.Println("player" + PlayerNum + "wins!") //other player wins
 		return true
 	}
 
