@@ -109,12 +109,14 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewY = state.pieces[i].y + 1
 				}
 				NewState := MakeMove(state, player, NewX, NewY, i) //gives either a new state or if its invalid the same state
+				NewState.parent = &state
 				final = append(final, NewState)
 			case "L1":
 				for j := state.pieces[i].y; j < len(state.board[0]); j++ {
 					NewX := state.pieces[i].x
 					NewY := j
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 					if state.board[NewX][NewY] != "O" {
 						break
@@ -125,6 +127,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[i].x
 					NewY := j
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 					if state.board[NewX][NewY] != "O" {
 						break
@@ -140,9 +143,11 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewY = state.pieces[i].y + 2
 				}
 				NewState := MakeMove(state, player, NewX, NewY, i)
+				NewState.parent = &state
 				final = append(final, NewState)
 				NewY = state.pieces[i].x + 1
 				NewState = MakeMove(state, player, NewX, NewY, i)
+				NewState.parent = &state
 				final = append(final, NewState)
 			case "S1", "S2":
 				var moves []int
@@ -156,6 +161,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[j].x + moves[j]
 					NewY := state.pieces[j].y + moves[j+1]
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 				}
 			case "G1", "G2", "P1+", "P2+", "L1+", "L2+", "N1+", "N2+", "S1+", "S2+":
@@ -170,6 +176,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[j].x + moves[j]
 					NewY := state.pieces[j].y + moves[j+1]
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 				}
 			case "B1", "B2":
@@ -177,6 +184,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[i].x + j
 					NewY := state.pieces[i].y + j
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 					if state.board[NewX][NewY] != "O" {
 						break
@@ -186,6 +194,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[i].x - j
 					NewY := state.pieces[i].y - j
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 					if state.board[NewX][NewY] != "O" {
 						break
@@ -196,6 +205,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := j
 					NewY := state.pieces[i].y
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 					if state.board[NewX][NewY] != "O" {
 						break
@@ -205,6 +215,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[i].x
 					NewY := g
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 					if state.board[NewX][NewY] != "O" {
 						break
@@ -217,6 +228,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[j].x + moves[j]
 					NewY := state.pieces[j].y + moves[j+1]
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 				}
 			case "B1+", "B2+":
@@ -224,6 +236,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[i].x + j
 					NewY := state.pieces[i].y + j
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 					if state.board[NewX][NewY] != "O" {
 						break
@@ -233,6 +246,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[i].x - j
 					NewY := state.pieces[i].y - j
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 					if state.board[NewX][NewY] != "O" {
 						break
@@ -244,6 +258,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[j].x + moves[j]
 					NewY := state.pieces[j].y + moves[j+1]
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 				}
 			case "R1+", "R2+":
@@ -251,6 +266,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := j
 					NewY := state.pieces[i].y
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 					if state.board[NewX][NewY] != "O" {
 						break
@@ -260,6 +276,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[i].x
 					NewY := g
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 					if state.board[NewX][NewY] != "O" {
 						break
@@ -271,6 +288,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[j].x + moves[j]
 					NewY := state.pieces[j].y + moves[j+1]
 					NewState := MakeMove(state, player, NewX, NewY, i)
+					NewState.parent = &state
 					final = append(final, NewState)
 				}
 			}
