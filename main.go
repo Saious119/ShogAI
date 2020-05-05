@@ -11,7 +11,7 @@ func main() {
 		parent: nil,
 	}
 
-	m, err := MiniMax(state, 1, 5)
+	m, err := MiniMax(state, 1, 1)
 	if err != nil {
 		panic(err)
 	}

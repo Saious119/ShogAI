@@ -456,19 +456,26 @@ func MiniMax(state ShogiState, player, depth int) (Move, error) {
 
 	kids := Succ(state, player)
 	var vals []int
+	var finalKids []ShogiState
 	for i := 0; i < len(kids); i++ {
+		k, err := diff(state, kids[i]) //rm duplicates
+		if err != nil {
+			continue
+		}
+		fmt.Println(k)
 		val := auxMiniMax(kids[i], player, depth-1, false)
 		vals = append(vals, val)
+		finalKids = append(finalKids, kids[i])
 	}
 
 	maximum := 0
 	for i := 0; i < len(vals); i++ {
-		if vals[i] > maximum {
+		if vals[i] > vals[maximum] {
 			maximum = i
 		}
 	}
 
-	m, err := diff(state, kids[maximum])
+	m, err := diff(state, finalKids[maximum])
 	if err != nil {
 		panic("No move is max, this shouldn't be possible because maximum := 0")
 	}
@@ -553,6 +560,7 @@ func MakeMove(state ShogiState, player int, NewX int, NewY int, i int) ShogiStat
 				}
 			}
 		}
+		// PrintBoard(newState.board)
 	}
 	return newState
 }
