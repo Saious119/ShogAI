@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+	"time"
+)
 
 func main() {
 	board := InitBoard()
@@ -10,12 +14,18 @@ func main() {
 		pieces: InitPieces(),
 		parent: nil,
 	}
-	fmt.Println(state)
+	// fmt.Println(state)
 
-	m, err := MiniMax(state, 1, 2)
-	if err != nil {
-		panic(err)
+	// bFile, err := os.Open("./NodeScriptShogAI/board.txt")
+	for {
+		fmt.Println(state)
+		m, err := MiniMax(state, 2, 1)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(m)
+		ioutil.WriteFile("./NodeScriptShogAI/move.txt", []byte(m.String()), 0644)
+		time.Sleep(30 * time.Second)
 	}
-	fmt.Println(m)
 
 }

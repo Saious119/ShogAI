@@ -23,6 +23,11 @@ type ShogiState struct {
 	parent *ShogiState
 }
 
+func (m Move) String() string {
+	s := fmt.Sprintf("%d %d %d %d\n", m.curr.x+1, m.curr.y+1, m.final.x+1, m.final.y+1)
+	return s
+}
+
 func (state ShogiState) String() string {
 	var s string
 	for i := 0; i < len(state.board); i++ {
@@ -504,7 +509,7 @@ func MiniMax(state ShogiState, player, depth int) (Move, error) {
 		}
 	}
 
-	fmt.Println(finalKids[maximum])
+	// fmt.Println(finalKids[maximum])
 	m, err := diff(state, finalKids[maximum])
 	if err != nil {
 		panic("No move is max, this shouldn't be possible because maximum := 0")
