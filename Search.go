@@ -66,8 +66,8 @@ func Check(state ShogiState, player int) bool { //returns true if player is in c
 	FoundKingAll := true //found our king on all boards, no checks
 	for a := 0; a < len(CurrBoard); a++ {
 		FoundKingInBoard := false
-		for i := 0; i < len(CurrBoard[a].board[i]); i++ {
-			for j := 0; j < len(CurrBoard[a].board); j++ {
+		for i := 0; i < len(CurrBoard[a].board); i++ {
+			for j := 0; j < len(CurrBoard[a].board[i]); j++ {
 				if CurrBoard[a].board[i][j] == YourKing {
 					FoundKingInBoard = true //found our king on this board
 					break
