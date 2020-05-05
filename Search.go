@@ -177,6 +177,9 @@ func Succ(state ShogiState, player int) []ShogiState {
 							break
 						}
 					}
+					if strings.Contains(state.board[NewY][NewX], "1") {
+						break
+					}
 				}
 			case "L2":
 				for j := state.pieces[i].y; j >= 0; j-- {
@@ -191,6 +194,9 @@ func Succ(state ShogiState, player int) []ShogiState {
 							}
 							break
 						}
+					}
+					if strings.Contains(state.board[NewY][NewX], "2") {
+						break
 					}
 				}
 			case "N1", "N2":
