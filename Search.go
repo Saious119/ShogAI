@@ -207,7 +207,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 				if !state.Equal(NewState) {
 					final = append(final, NewState)
 				}
-				NewY = state.pieces[i].x + 1
+				NewX = state.pieces[i].x + 1
 				NewState = MakeMove(state, player, NewX, NewY, i)
 				NewState.parent = &state
 				if !state.Equal(NewState) {
