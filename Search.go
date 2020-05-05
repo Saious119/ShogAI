@@ -522,7 +522,7 @@ func IsValid(board [][]string, NewX int, NewY int, player int) bool {
 		return false
 	}
 	StrPlayer := strconv.Itoa(player)
-	if strings.Contains(board[NewX][NewY], StrPlayer) {
+	if strings.Contains(board[NewY][NewX], StrPlayer) {
 		return false
 	}
 	return true

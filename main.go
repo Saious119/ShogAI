@@ -12,7 +12,7 @@ func main() {
 	}
 	fmt.Println(state)
 
-	m, err := MiniMax(state, 1, 1)
+	m, err := MiniMax(state, 1, 2)
 	if err != nil {
 		panic(err)
 	}
