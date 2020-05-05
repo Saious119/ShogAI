@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func (state ShogiState) updateCoords(coords []string) ShogiState {
@@ -67,7 +66,6 @@ func main() {
 		}
 		fmt.Println(m)
 		ioutil.WriteFile("./NodeScriptShogAI/move.txt", []byte(m.String()), 0644)
-		time.Sleep(30 * time.Second)
 
 		data, err := ioutil.ReadFile("./NodeScriptShogAI/board.txt")
 		if err != nil {
