@@ -11,7 +11,7 @@ func InitBoard() [][]string { //creates a new board for a new game and prints it
 		{"O", "O", "O", "O", "O", "O", "O", "O", "0"},
 		{"O", "O", "O", "O", "O", "O", "O", "O", "0"},
 		{"P2", "P2", "P2", "P2", "P2", "P2", "P2", "P2", "P2"},
-		{"O", "R2", "O", "O", "O", "O", "O", "B2", "O"},
+		{"O", "B2", "O", "O", "O", "O", "O", "R2", "O"},
 		{"L2", "N2", "S2", "G2", "K2", "G2", "S2", "N2", "L2"},
 	}
 	//printBoard(NewBoard)
