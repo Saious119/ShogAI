@@ -228,8 +228,8 @@ func Succ(state ShogiState, player int) []ShogiState {
 					moves = []int{-1, 1, 0, 1, 1, 1, -1, -1, 1, -1}
 				}
 				for j := 0; j <= len(moves)-2; j += 2 {
-					NewX := state.pieces[j].x + moves[j]
-					NewY := state.pieces[j].y + moves[j+1]
+					NewX := state.pieces[i].x + moves[j]
+					NewY := state.pieces[i].y + moves[j+1]
 					NewState := MakeMove(state, player, NewX, NewY, i)
 					NewState.parent = &state
 					if !state.Equal(NewState) {
