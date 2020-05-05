@@ -23,6 +23,26 @@ type ShogiState struct {
 	parent *ShogiState
 }
 
+func (state ShogiState) String() string {
+	var s string
+	for i := 0; i < len(state.board); i++ {
+		for j := 0; j < len(state.board[i]); j++ {
+			if state.board[i][j] == "O" {
+				s = s + fmt.Sprintf(state.board[i][j]+"  ")
+			} else {
+				s = s + fmt.Sprintf(state.board[i][j]+" ")
+			}
+		}
+		s = s + fmt.Sprintf("\n")
+	}
+	for i := 0; i < len(state.pieces); i++ {
+		s = s + fmt.Sprintf("{x: %d, y: %d} ", state.pieces[i].x, state.pieces[i].y)
+	}
+	s = s + fmt.Sprintln("\n", state.parent)
+
+	return s
+}
+
 func popList(list []ShogiState) []ShogiState {
 	return list[1:]
 }
@@ -131,10 +151,10 @@ func Succ(state ShogiState, player int) []ShogiState {
 				NewX := state.pieces[i].x + 0
 				var NewY int
 				if strings.Contains(state.pieces[i].name, "1") {
-					NewY = state.pieces[i].y - 1
+					NewY = state.pieces[i].y + 1
 				}
 				if strings.Contains(state.pieces[i].name, "2") {
-					NewY = state.pieces[i].y + 1
+					NewY = state.pieces[i].y - 1
 				}
 				NewState := MakeMove(state, player, NewX, NewY, i) //gives either a new state or if its invalid the same state
 				NewState.parent = &state
@@ -416,7 +436,7 @@ func Min(i, j int) int {
 }
 
 func auxMiniMax(state ShogiState, player, depth int, max bool) int {
-	PrintBoard(state.board)
+	// fmt.Println(state)
 	if state.IsGoal(player) {
 		//Oh Mowie Wowie!
 		if max {
@@ -463,6 +483,7 @@ func MiniMax(state ShogiState, player, depth int) (Move, error) {
 			continue
 		}
 		fmt.Println(k)
+		fmt.Println(state)
 		val := auxMiniMax(kids[i], player, depth-1, false)
 		vals = append(vals, val)
 		finalKids = append(finalKids, kids[i])
