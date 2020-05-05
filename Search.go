@@ -120,7 +120,6 @@ func Succ(state ShogiState, player int) []ShogiState {
 							NewState := MakeMove(state, player, NewX, NewY, i)
 							NewState.parent = &state
 							final = append(final, NewState)
-							fmt.Println(NewState)
 							break
 						}
 					}
@@ -134,7 +133,6 @@ func Succ(state ShogiState, player int) []ShogiState {
 							NewState := MakeMove(state, player, NewX, NewY, i)
 							NewState.parent = &state
 							final = append(final, NewState)
-							fmt.Println(NewState)
 							break
 						}
 					}
@@ -422,11 +420,6 @@ func OwnsPiece(piece string, playerNum int) bool {
 }
 
 func IsValid(board [][]string, NewX int, NewY int, player int) bool {
-	/*
-		if strings.Contains(board[NewX][NewY], "K") {
-			return false
-		}
-	*/
 	if NewX >= len(board[0]) || NewX < 0 {
 		return false
 	}
@@ -479,6 +472,9 @@ func CheckPromotion(Newy int, piece string) bool {
 //validates movements and make changes, then sends back a changed state
 func MakeMove(state ShogiState, player int, NewX int, NewY int, i int) ShogiState {
 	newState := duplicate(state)
+	if newState.pieces[i].x == NewX && newState.pieces[i].y == NewY {
+		return newState
+	}
 	if IsValid(state.board, NewX, NewY, player) {
 		piece := newState.pieces[i].name
 		newState.board[newState.pieces[i].x][newState.pieces[i].y] = "O"
