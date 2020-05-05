@@ -7,7 +7,6 @@ const chokidar = require('chokidar');
 var isReady = false
 var board = []
 var page
-var globalBoardState = []
 var globalMoveArr = []
 const tileWidth = 38
 const numTilesX = 9
@@ -42,7 +41,7 @@ watcher.on('change', makeMove)
   // Gets initial board state from the canvas image data
   const boardState = await getBoardState(dataURL)
   console.log(`INITIAL BOARD STATE:`)
-  await printBoard(boardState)
+  console.log(`--------------------------------------\n${getBoardStr(boardState)}\n--------------------------------------`)
   
   // Initialization over, get ready to start playing game
   isReady = true
@@ -71,10 +70,9 @@ async function getBoardState(dataURL) {
     }
     board.push(boardRow)
   }
-  globalBoardState = board
 
   // Return board state as a string
-  return getBoardStr(board)
+  return board
 }
 
 /* Determines what piece occupies the tile being checked and returns it as a string */
@@ -199,29 +197,30 @@ async function makeMove() {
     // Parse move from file
     const data = fs.readFileSync('./move.txt', 'utf8')
     const moveData = data.split(/\s+/)
-    // console.log(moveData)
 
     // Perform move on the board
     performMove(moveData)
 
+    // Get board state from canvas before opponent moves
+    const prevBoardImg = await getBoardImg()
+    const prevBoardState = await getBoardState(prevBoardImg)
+    // console.log(`\n${getBoardStr(prevBoardState)}\n`)
+
     // Wait for opponent to make move and canvas to update
     await page.waitFor(1000)
-
-    // Get board state from canvas
-    const boardImg = await getBoardImg()
-    const prevBoardState = [...globalBoardState]
-    const boardState = await getBoardState(boardImg)
-    console.log(`\n${boardState}\n`)
+    
+    // Get board state from canvas after opponent moves
+    const currBoardImg = await getBoardImg()
+    const currBoardState = await getBoardState(currBoardImg)
+    // console.log(`\n${getBoardStr(currBoardState)}\n`)
 
     // Write opponent move to file
-    const currentBoardState = [...globalBoardState]
-    const enemyMove = await computeEnemyMove(prevBoardState, currentBoardState, boardImg)
+    const enemyMove = await computeEnemyMove(prevBoardState, currBoardState, currBoardImg)
     fs.writeFileSync('./board.txt', new Uint8Array(Buffer.from(enemyMove)))
   }
 }
 
 /* Gets the enemy move and returns properly formatted string for our AI to parse */
-// TODO: handle the case when a piece takes another piece
 async function computeEnemyMove(prev, curr, imgURL) {
   // Get Jimp processed image
   const base64String = imgURL.substr(imgURL.indexOf(',') + 1)
@@ -243,31 +242,28 @@ async function computeEnemyMove(prev, curr, imgURL) {
       }
     }
   }
-  console.log(`Coords before removal: ${coords.toString()}`)
-  globalMoveArr.forEach(pair => {
-    coords.splice(coords.indexOf(pair), 1)
-  })
-  console.log(`Coords after removal: ${coords.toString()}`)
+
+  console.log("Coordinates that are different after the AI moved:")
+  console.log(coords)
+  
+  // Gets the piece that is on the first pair of coordinates (enemy piece moving foward means this function returns "O" cuz its blank)
   const piece = getPiece(image, ...coords[0])
-  console.log(`Piece from the coords "${coords[0].toString()}": ${piece}`)
+  // console.log(`Piece from the coords "${coords[0].toString()}": ${piece}`)
   if (piece === "O") {
-    console.log("PIECE WAS AN O")
+    // console.log("PIECE WAS AN O")
     return getMoveStr(coords)
   } else {
-    console.log("PIECE WAS NOT O")
+    // console.log("PIECE WAS NOT O")
     return getMoveStr(coords.reverse())
   }
 }
 
 /* Takes two pairs of coords and compiles a string in the format for our AI to parse */
 function getMoveStr(coords) {
+  console.log(`Enemy move: (${coords[0][0]},${coords[0][1]}) -> (${coords[1][0]},${coords[1][1]})`)
   let moveArr = []
   coords.forEach(pair => {
     moveArr.push(...pair)
   })
   return moveArr.join(" ")
-}
-
-async function printBoard(board) {
-  console.log(`--------------------------------------\n${board}\n--------------------------------------`)
 }
