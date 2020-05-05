@@ -235,7 +235,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 				if strings.Contains(state.pieces[i].name, "1") {
 					moves = []int{-1, -1, 0, -1, 1, -1, 1, 0, -1, 0, 0, 1}
 				}
-				if strings.Contains(state.pieces[i].name, "1") {
+				if strings.Contains(state.pieces[i].name, "2") {
 					moves = []int{-1, 1, 0, 1, 1, 1, 0, -1, 1, 0, 0, -1}
 				}
 				for j := 0; j <= len(moves)-2; j += 2 {
