@@ -36,14 +36,14 @@ func (state ShogiState) IsGoal(player int) bool { //returns true if a player has
 		opponent = 1
 	}
 	NextBoard := Succ(state, player)
-	NotAllCheck := true //not all future moves are in check
+	AllCheck := true //not all future moves are in check
 	for i := 0; i < len(NextBoard); i++ {
 		if !Check(NextBoard[i], opponent) { //do all of them involve 2 being in check
-			NotAllCheck = false //if not then theres a move to be made
-			break               //no need to keep searching
+			AllCheck = false //if not then theres a move to be made
+			break            //no need to keep searching
 		}
 	}
-	if !NotAllCheck { //all moves would still be check
+	if AllCheck { //all moves would still be check
 		PlayerNum := strconv.Itoa(player)
 		fmt.Println("player" + PlayerNum + "wins!") //other player wins
 		return true
@@ -120,6 +120,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 							NewState := MakeMove(state, player, NewX, NewY, i)
 							NewState.parent = &state
 							final = append(final, NewState)
+							fmt.Println(NewState)
 							break
 						}
 					}
@@ -133,6 +134,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 							NewState := MakeMove(state, player, NewX, NewY, i)
 							NewState.parent = &state
 							final = append(final, NewState)
+							fmt.Println(NewState)
 							break
 						}
 					}
@@ -352,6 +354,7 @@ func Min(i, j int) int {
 }
 
 func auxMiniMax(state ShogiState, player, depth int, max bool) int {
+	PrintBoard(state.board)
 	if state.IsGoal(player) {
 		//Oh Mowie Wowie!
 		if max {
@@ -430,9 +433,6 @@ func IsValid(board [][]string, NewX int, NewY int, player int) bool {
 	if NewY >= len(board) || NewY < 0 {
 		return false
 	}
-	fmt.Println(board)
-	fmt.Println("Len(board)", len(board))
-	fmt.Println("Len(board[NewX])", len(board[NewX]))
 	StrPlayer := strconv.Itoa(player)
 	if strings.Contains(board[NewX][NewY], StrPlayer) {
 		return false
@@ -457,7 +457,7 @@ func CheckPromotion(Newy int, piece string) bool {
 			return true
 		}
 	}
-	if Newy < 4 {
+	if Newy < 3 {
 		switch piece {
 		case "P2":
 			return true
@@ -481,11 +481,9 @@ func MakeMove(state ShogiState, player int, NewX int, NewY int, i int) ShogiStat
 	newState := duplicate(state)
 	if IsValid(state.board, NewX, NewY, player) {
 		piece := newState.pieces[i].name
-		newState.board[NewX][NewY] = piece //update board
-		fmt.Println("OldX = ", newState.pieces[i].x)
-		fmt.Println("OldY = ", newState.pieces[i].y)
 		newState.board[newState.pieces[i].x][newState.pieces[i].y] = "O"
-		newState.pieces[i].x = NewX //update piece
+		newState.board[NewX][NewY] = piece //update board
+		newState.pieces[i].x = NewX        //update piece
 		newState.pieces[i].y = NewY
 		if !strings.Contains(piece, "+") {
 			if !strings.Contains(piece, "K") {

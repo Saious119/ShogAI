@@ -25,6 +25,7 @@ func PrintBoard(board [][]string) { //prints the given board
 		}
 		fmt.Println()
 	}
+	fmt.Println()
 }
 
 func InitPieces() []Pair {
