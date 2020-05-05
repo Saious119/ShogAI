@@ -56,10 +56,12 @@ func main() {
 		pieces: InitPieces(),
 		parent: nil,
 	}
+	player := 2
+	searchDepth := 1
 
 	for {
 		fmt.Println(state)
-		m, err := MiniMax(state, 2, 1)
+		m, err := MiniMax(state, player, searchDepth)
 		if err != nil {
 			panic(err)
 		}
@@ -73,6 +75,10 @@ func main() {
 		}
 		coords := strings.Split(string(data), " ")
 		state = state.updateCoords(coords)
+		if state.IsGoal(player) {
+			fmt.Println("We won!")
+			break
+		}
 	}
 
 }
