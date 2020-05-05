@@ -648,6 +648,13 @@ func MakeMove(state ShogiState, player int, NewX int, NewY int, i int) ShogiStat
 		return newState
 	}
 	if IsValid(state.board, NewX, NewY, player) {
+		if newState.board[NewY][NewX] != "O" {
+			for j := 0; j < len(newState.pieces); j++ {
+				if newState.pieces[j].x == NewX && newState.pieces[j].y == NewY {
+					newState.pieces[j].name = ""
+				}
+			}
+		}
 		piece := newState.pieces[i].name
 		newState.board[newState.pieces[i].y][newState.pieces[i].x] = "O"
 		newState.board[NewY][NewX] = piece //update board
