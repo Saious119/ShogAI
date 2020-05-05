@@ -412,12 +412,15 @@ func IsValid(board [][]string, NewX int, NewY int, player int) bool {
 			return false
 		}
 	*/
-	if NewX > len(board[0]) || NewX < 0 {
+	if NewX >= len(board[0]) || NewX < 0 {
 		return false
 	}
-	if NewY > len(board) || NewY < 0 {
+	if NewY >= len(board) || NewY < 0 {
 		return false
 	}
+	fmt.Println(board)
+	fmt.Println("Len(board)", len(board))
+	fmt.Println("Len(board[NewX])", len(board[NewX]))
 	StrPlayer := strconv.Itoa(player)
 	if strings.Contains(board[NewX][NewY], StrPlayer) {
 		return false
@@ -463,22 +466,23 @@ func CheckPromotion(Newy int, piece string) bool {
 
 //validates movements and make changes, then sends back a changed state
 func MakeMove(state ShogiState, player int, NewX int, NewY int, i int) ShogiState {
+	newState := duplicate(state)
 	if IsValid(state.board, NewX, NewY, player) {
-		piece := state.pieces[i].name
-		state.board[NewX][NewY] = piece //update board
-		fmt.Println("OldX = ", state.pieces[i].x)
-		fmt.Println("OldY = ", state.pieces[i].y)
-		state.board[state.pieces[i].x][state.pieces[i].y] = "O"
-		state.pieces[i].x = NewX //update piece
-		state.pieces[i].y = NewY
+		piece := newState.pieces[i].name
+		newState.board[NewX][NewY] = piece //update board
+		fmt.Println("OldX = ", newState.pieces[i].x)
+		fmt.Println("OldY = ", newState.pieces[i].y)
+		newState.board[newState.pieces[i].x][newState.pieces[i].y] = "O"
+		newState.pieces[i].x = NewX //update piece
+		newState.pieces[i].y = NewY
 		if !strings.Contains(piece, "+") {
 			if !strings.Contains(piece, "K") {
-				if CheckPromotion(NewY, state.pieces[i].name) {
-					state.board[NewX][NewY] = piece + "+"
-					state.pieces[i].name = piece + "+"
+				if CheckPromotion(NewY, newState.pieces[i].name) {
+					newState.board[NewX][NewY] = piece + "+"
+					newState.pieces[i].name = piece + "+"
 				}
 			}
 		}
 	}
-	return state
+	return newState
 }
