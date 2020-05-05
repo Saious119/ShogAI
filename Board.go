@@ -73,12 +73,12 @@ func InitPieces() []Pair {
 
 	pair = Pair{1, 1, "R1"}
 	pieces = append(pieces, pair)
-	pair = Pair{1, 7, "R2"}
+	pair = Pair{1, 7, "B2"}
 	pieces = append(pieces, pair)
 
 	pair = Pair{7, 1, "B1"}
 	pieces = append(pieces, pair)
-	pair = Pair{7, 7, "B2"}
+	pair = Pair{7, 7, "R2"}
 	pieces = append(pieces, pair)
 
 	for i := 0; i < 9; i++ {
