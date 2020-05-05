@@ -151,10 +151,10 @@ func Succ(state ShogiState, player int) []ShogiState {
 				NewX := state.pieces[i].x + 0
 				var NewY int
 				if strings.Contains(state.pieces[i].name, "1") {
-					NewY = state.pieces[i].y - 1
+					NewY = state.pieces[i].y + 1
 				}
 				if strings.Contains(state.pieces[i].name, "2") {
-					NewY = state.pieces[i].y + 1
+					NewY = state.pieces[i].y - 1
 				}
 				NewState := MakeMove(state, player, NewX, NewY, i) //gives either a new state or if its invalid the same state
 				NewState.parent = &state
