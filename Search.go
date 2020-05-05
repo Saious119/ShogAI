@@ -28,19 +28,21 @@ func (state ShogiState) String() string {
 	for i := 0; i < len(state.board); i++ {
 		for j := 0; j < len(state.board[i]); j++ {
 			if state.board[i][j] == "O" {
-				s = s + fmt.Sprintf(state.board[i][j]+"  ")
+				s = s + fmt.Sprint(state.board[i][j]+"  ")
 			} else {
-				s = s + fmt.Sprintf(state.board[i][j]+" ")
+				s = s + fmt.Sprint(state.board[i][j]+" ")
 			}
 		}
-		s = s + fmt.Sprintf("\n")
+		s = s + fmt.Sprint("\n")
 	}
+	var s1 string
 	for i := 0; i < len(state.pieces); i++ {
-		s = s + fmt.Sprintf("{x: %d, y: %d} ", state.pieces[i].x, state.pieces[i].y)
+		s1 = s1 + fmt.Sprintf("{x: %d, y: %d, name: %s} ", state.pieces[i].x, state.pieces[i].y, state.pieces[i].name)
 	}
-	s = s + fmt.Sprintln("\n", state.parent)
+	var s2 string
+	s2 = fmt.Sprintf("\n %p\n", state.parent)
 
-	return s
+	return s + s1 + s2
 }
 
 func popList(list []ShogiState) []ShogiState {
@@ -166,7 +168,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[i].x
 					NewY := j
 					if IsValid(state.board, NewX, NewY, player) {
-						if state.board[NewX][NewY] != "O" {
+						if state.board[NewY][NewX] != "O" {
 							NewState := MakeMove(state, player, NewX, NewY, i)
 							NewState.parent = &state
 							if !state.Equal(NewState) {
@@ -181,7 +183,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[i].x
 					NewY := j
 					if IsValid(state.board, NewX, NewY, player) {
-						if state.board[NewX][NewY] != "O" {
+						if state.board[NewY][NewX] != "O" {
 							NewState := MakeMove(state, player, NewX, NewY, i)
 							NewState.parent = &state
 							if !state.Equal(NewState) {
@@ -250,7 +252,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[i].x + j
 					NewY := state.pieces[i].y + j
 					if IsValid(state.board, NewX, NewY, player) {
-						if state.board[NewX][NewY] != "O" {
+						if state.board[NewY][NewX] != "O" {
 							NewState := MakeMove(state, player, NewX, NewY, i)
 							NewState.parent = &state
 							if !state.Equal(NewState) {
@@ -264,7 +266,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[i].x - j
 					NewY := state.pieces[i].y - j
 					if IsValid(state.board, NewX, NewY, player) {
-						if state.board[NewX][NewY] != "O" {
+						if state.board[NewY][NewX] != "O" {
 							NewState := MakeMove(state, player, NewX, NewY, i)
 							NewState.parent = &state
 							if !state.Equal(NewState) {
@@ -279,7 +281,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := j
 					NewY := state.pieces[i].y
 					if IsValid(state.board, NewX, NewY, player) {
-						if state.board[NewX][NewY] != "O" {
+						if state.board[NewY][NewX] != "O" {
 							NewState := MakeMove(state, player, NewX, NewY, i)
 							NewState.parent = &state
 							if !state.Equal(NewState) {
@@ -293,7 +295,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					NewX := state.pieces[i].x
 					NewY := g
 					if IsValid(state.board, NewX, NewY, player) {
-						if state.board[NewX][NewY] != "O" {
+						if state.board[NewY][NewX] != "O" {
 							NewState := MakeMove(state, player, NewX, NewY, i)
 							NewState.parent = &state
 							if !state.Equal(NewState) {
@@ -324,7 +326,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					if !state.Equal(NewState) {
 						final = append(final, NewState)
 					}
-					if state.board[NewX][NewY] != "O" {
+					if state.board[NewY][NewX] != "O" {
 						break
 					}
 				}
@@ -336,7 +338,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					if !state.Equal(NewState) {
 						final = append(final, NewState)
 					}
-					if state.board[NewX][NewY] != "O" {
+					if state.board[NewY][NewX] != "O" {
 						break
 					}
 				}
@@ -355,7 +357,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 				for j := 0; j < len(state.board); j++ {
 					NewX := j
 					NewY := state.pieces[i].y
-					if state.board[NewX][NewY] != "O" {
+					if state.board[NewY][NewX] != "O" {
 						NewState := MakeMove(state, player, NewX, NewY, i)
 						NewState.parent = &state
 						if !state.Equal(NewState) {
@@ -367,7 +369,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 				for g := 0; g < len(state.board[0]); g++ {
 					NewX := state.pieces[i].x
 					NewY := g
-					if state.board[NewX][NewY] != "O" {
+					if state.board[NewY][NewX] != "O" {
 						NewState := MakeMove(state, player, NewX, NewY, i)
 						NewState.parent = &state
 						if !state.Equal(NewState) {
@@ -483,7 +485,7 @@ func MiniMax(state ShogiState, player, depth int) (Move, error) {
 			continue
 		}
 		fmt.Println(k)
-		fmt.Println(state)
+		fmt.Println(kids[i])
 		val := auxMiniMax(kids[i], player, depth-1, false)
 		vals = append(vals, val)
 		finalKids = append(finalKids, kids[i])
@@ -569,19 +571,18 @@ func MakeMove(state ShogiState, player int, NewX int, NewY int, i int) ShogiStat
 	}
 	if IsValid(state.board, NewX, NewY, player) {
 		piece := newState.pieces[i].name
-		newState.board[newState.pieces[i].x][newState.pieces[i].y] = "O"
-		newState.board[NewX][NewY] = piece //update board
+		newState.board[newState.pieces[i].y][newState.pieces[i].x] = "O"
+		newState.board[NewY][NewX] = piece //update board
 		newState.pieces[i].x = NewX        //update piece
 		newState.pieces[i].y = NewY
 		if !strings.Contains(piece, "+") {
 			if !strings.Contains(piece, "K") {
 				if CheckPromotion(NewY, newState.pieces[i].name) {
-					newState.board[NewX][NewY] = piece + "+"
+					newState.board[NewY][NewX] = piece + "+"
 					newState.pieces[i].name = piece + "+"
 				}
 			}
 		}
-		// PrintBoard(newState.board)
 	}
 	return newState
 }
