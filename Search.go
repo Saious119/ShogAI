@@ -288,7 +288,7 @@ func Succ(state ShogiState, player int) []ShogiState {
 					}
 				}
 			case "R1", "R2":
-				for j := 0; j < len(state.board); j++ {
+				for j := state.pieces[i].x; j < len(state.board); j++ {
 					NewX := j
 					NewY := state.pieces[i].y
 					if IsValid(state.board, NewX, NewY, player) {
@@ -301,10 +301,19 @@ func Succ(state ShogiState, player int) []ShogiState {
 							break
 						}
 					}
+					var StrPlayer string
+					if state.pieces[i].name == "R1" {
+						StrPlayer = "1"
+					} else {
+						StrPlayer = "2"
+					}
+					if strings.Contains(state.board[NewY][NewX], StrPlayer) {
+						break
+					}
 				}
-				for g := 0; g < len(state.board[0]); g++ {
-					NewX := state.pieces[i].x
-					NewY := g
+				for j := state.pieces[i].x; j >= 0; j-- {
+					NewX := j
+					NewY := state.pieces[i].y
 					if IsValid(state.board, NewX, NewY, player) {
 						if state.board[NewY][NewX] != "O" {
 							NewState := MakeMove(state, player, NewX, NewY, i)
@@ -314,6 +323,63 @@ func Succ(state ShogiState, player int) []ShogiState {
 							}
 							break
 						}
+					}
+					var StrPlayer string
+					if state.pieces[i].name == "R1" {
+						StrPlayer = "1"
+					} else {
+						StrPlayer = "2"
+					}
+					if strings.Contains(state.board[NewY][NewX], StrPlayer) {
+						break
+					}
+				}
+				for g := state.pieces[i].y; g < len(state.board[0]); g++ {
+					NewX := state.pieces[i].x
+					NewY := g
+					if IsValid(state.board, NewX, NewY, player) {
+						if state.board[NewY][NewX] != "O" {
+							NewState := MakeMove(state, player, NewX, NewY, i)
+							fmt.Println(NewState)
+							NewState.parent = &state
+							if !state.Equal(NewState) {
+								final = append(final, NewState)
+							}
+							break
+						}
+					}
+					var StrPlayer string
+					if state.pieces[i].name == "R1" {
+						StrPlayer = "1"
+					} else {
+						StrPlayer = "2"
+					}
+					if strings.Contains(state.board[NewY][NewX], StrPlayer) {
+						break
+					}
+				}
+				for g := state.pieces[i].y; g >= 0; g-- {
+					NewX := state.pieces[i].x
+					NewY := g
+					if IsValid(state.board, NewX, NewY, player) {
+						if state.board[NewY][NewX] != "O" {
+							NewState := MakeMove(state, player, NewX, NewY, i)
+							fmt.Println(NewState)
+							NewState.parent = &state
+							if !state.Equal(NewState) {
+								final = append(final, NewState)
+							}
+							break
+						}
+					}
+					var StrPlayer string
+					if state.pieces[i].name == "R1" {
+						StrPlayer = "1"
+					} else {
+						StrPlayer = "2"
+					}
+					if strings.Contains(state.board[NewY][NewX], StrPlayer) {
+						break
 					}
 				}
 			case "K1", "K2":
