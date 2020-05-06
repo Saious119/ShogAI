@@ -62,6 +62,22 @@ func (state ShogiState) updateCoords(coords []string) ShogiState {
 	return newState
 }
 
+func (state ShogiState) addPiece(coords []string) ShogiState {
+	newState := duplicate(state)
+	newX, err := strconv.Atoi(coords[0])
+	if err != nil {
+		panic(err)
+	}
+	newY, err := strconv.Atoi(coords[1])
+	if err != nil {
+		panic(err)
+	}
+	newPair := Pair{x: newX, y: newY, name: coords[2]}
+	newState.pieces = append(newState.pieces, newPair)
+	newState.board[newY][newX] = coords[2]
+	return newState
+}
+
 func main() {
 	board := InitBoard()
 	state := ShogiState{
@@ -98,7 +114,11 @@ func main() {
 		}
 		coords = strings.Split(string(data), " ")
 		history = append(history, m)
-		state = state.updateCoords(coords)
+		if len(coords) == 4 {
+			state = state.updateCoords(coords)
+		} else if len(coords) == 3 {
+			state = state.addPiece(coords)
+		}
 
 		if state.IsGoal(player) {
 			fmt.Println("We won!")
