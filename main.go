@@ -34,6 +34,14 @@ func (state ShogiState) updateCoords(coords []string) ShogiState {
 
 	for i := 0; i < len(state.pieces); i++ {
 		if state.pieces[i].x == currX && state.pieces[i].y == currY {
+			if newState.board[finalY][finalX] != "O" {
+				for j := 0; j < len(newState.pieces); j++ {
+					if newState.pieces[j].x == finalX && newState.pieces[j].y == finalY {
+						newState.pieces[j].name = ""
+						break
+					}
+				}
+			}
 			piece := newState.pieces[i].name
 			newState.board[newState.pieces[i].y][newState.pieces[i].x] = "O"
 			newState.board[finalY][finalX] = piece //update board
@@ -82,7 +90,7 @@ func main() {
 
 		data, err = ioutil.ReadFile("./NodeScriptShogAI/board.txt")
 		if err != nil {
-			panic(err)
+			continue
 		}
 		fmt.Println(string(data))
 		if string(data) == "try again" {
