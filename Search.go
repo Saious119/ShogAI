@@ -40,14 +40,14 @@ func (state ShogiState) String() string {
 		}
 		s = s + fmt.Sprint("\n")
 	}
-	var s1 string
-	for i := 0; i < len(state.pieces); i++ {
-		s1 = s1 + fmt.Sprintf("{x: %d, y: %d, name: %s} ", state.pieces[i].x, state.pieces[i].y, state.pieces[i].name)
-	}
-	var s2 string
-	s2 = fmt.Sprintf("\n %p\n", state.parent)
+	// var s1 string
+	// for i := 0; i < len(state.pieces); i++ {
+	// 	s1 = s1 + fmt.Sprintf("{x: %d, y: %d, name: %s} ", state.pieces[i].x, state.pieces[i].y, state.pieces[i].name)
+	// }
+	// var s2 string
+	// s2 = fmt.Sprintf("\n %p\n", state.parent)
 
-	return s + s1 + s2
+	return s //+ s1 + s2
 }
 
 func popList(list []ShogiState) []ShogiState {

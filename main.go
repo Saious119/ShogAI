@@ -106,6 +106,7 @@ func main() {
 
 		data, err = ioutil.ReadFile("./NodeScriptShogAI/board.txt")
 		if err != nil {
+			fmt.Println("Failed to parse")
 			continue
 		}
 		fmt.Println(string(data))
