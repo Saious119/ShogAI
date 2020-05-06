@@ -105,6 +105,21 @@ function getPiece(img, x, y) {
     } else if (newP1.r === 0 && newP1.g === 0 && newP1.b === 0) { // The opponent bishop has a second black pixel
       return "B1"
     }
+  } else if (p1.r === 253 && p1.g === 87 && p1.b === 81) { // The opponent promoted piece is #fd5751 or rgb(253,87,81) first
+    const newP1 = Jimp.intToRGBA(img.getPixelColor(x+16+1,y+10))
+    if (newP1.r === 246 && newP1.g === 98 && newP1.b === 71) { // The opponent promoted bishop is #f66247 or rgb(246,98,71)
+      return "B1+" // Then up 1 pixel is #fd5751
+    } else if (newP1.r === 253 && newP1.g === 87 && newP1.b === 81) { // The opponent promoted lancelot is #fd5751 or rgb(253,87,81)
+      return "L1+" // Then up 1 pixel is #e18329
+    } else if (newP1.r === 242 && newP1.g === 104 && newP1.b === 66) { // The opponent promoted rook is #f26842 or rgb(242,104,66)
+      return "R1+" // Then up 1 pixel is #d09f0f
+    } else if (newP1.r === 239 && newP1.g === 109 && newP1.b === 61) { // The opponent promoted knight is #ef6d3d or rgb(239,109,61)
+      return "N1+" // Then up 1 pixel is #c9aa05
+    }
+  } else if (p1.r === 232 && p1.g === 121 && p1.b === 51) { // The opponent promoted silver general is #e87933 or rgb(232,121,51)
+    return "S1+" // Right 1 pixel is #fd5751 and then up 1 pixel is #d39a14
+  } else if (p1.r === 197 && p1.g === 177 && p1.b === 0) { // The opponent promoted pawn is #c5b100 or rgb(197,177,0)
+    return "P1+" // Right 1 pixel is #c5b000 and then up 1 pixel is #c5b000
   }
 
   // Check pixels from bottom left corner
@@ -133,6 +148,24 @@ function getPiece(img, x, y) {
         return "P2"
       }
     }
+  } else if (p2.r === 253 && p2.g === 87 && p2.b === 81) { // Our promoted piece is #fd5751 or rgb(253,87,81) first
+    const newP2 = Jimp.intToRGBA(img.getPixelColor(x+16+1,y+tileHeight+2-10))
+    if (newP2.r === 238 && newP2.g === 109 && newP2.b === 61) { // Our promoted bishop is #ee6d3d or rgb(238,109,61)
+      return "B2+" // Down 1 pixel is #ee6d3d
+    } else if (newP2.r === 193 && newP2.g === 173 && newP2.b === 0) { // Our promoted knight is #c1ad00 or rgb(193,173,0)
+      return "N2+" // Down 1 pixel is #c0ad00
+    } else if (newP2.r === 253 && newP2.g === 87 && newP2.b === 81) { // Our promoted piece then has another pixel which is #fd5751 or rgb(253,87,81)
+      const newestP2 = Jimp.intToRGBA(img.getPixelColor(x+16+1,y+tileHeight+2-9))
+      if (newestP2.r === 223 && newestP2.g === 130 && newestP2.b === 41) { // Our promoted pawn is #df8229 or rgb(223,130,41)
+        return "P2+"
+      } else if (newestP2.r === 234 && newestP2.g === 114 && newestP2.b === 56) { // Our promoted rook is #ea7238 or rgb(234,114,56)
+        return "R2+"
+      }
+    }
+  } else if (p2.r === 249 && p2.g === 92 && p2.b === 76) { // Our promoted lancelot is #f95c4c or rgb(249,92,76)
+    return "L2+" // Right 1 pixel is #fd5751 and then down another 1 pixel is #df8229
+  } else if (p2.r === 194 && p2.g === 173 && p2.b === 4) { // Our promoted silver general is #c2ad04 or rgb(194,173,4)
+    return "S2+" // Right 1 pixel is #c5a805 and then down another 1 pixel is #c0ad00
   }
 
   // A blank tile is the only option left
@@ -201,6 +234,16 @@ async function makeMove() {
     // Perform move on the board
     performMove(moveData)
 
+    // Check if promotion dialog pops up
+    await page.evaluate(() => {
+      const textElements = document.querySelectorAll(".gwt-HTML")
+      const textElement = textElements[1] != undefined ? textElements[1] : undefined
+      const promotionText = textElement != undefined ? textElement.innerText : undefined
+      if (promotionText != undefined && promotionText === "Would you like to promote this token now?") {
+        document.querySelector('.gwt-Button').click()
+      }
+    })
+
     // Get board state from canvas before opponent moves
     const prevBoardImg = await getBoardImg()
     const prevBoardState = await getBoardState(prevBoardImg)
@@ -209,14 +252,41 @@ async function makeMove() {
     // Wait for opponent to make move and canvas to update
     await page.waitFor(1000)
     
+    // Check if opponent won
+    const hasLost = await page.evaluate(() => {
+      const textElements = document.querySelectorAll(".gwt-HTML")
+      const textElement = textElements[1] != undefined ? textElements[1] : undefined
+      const gameOverText = textElement != undefined ? textElement.innerText : undefined
+      if (gameOverText != undefined && gameOverText === "Sorry. You have lost.") {
+        return true
+      } else {
+        return false
+      }
+    })
+
     // Get board state from canvas after opponent moves
     const currBoardImg = await getBoardImg()
     const currBoardState = await getBoardState(currBoardImg)
     // console.log(`\n${getBoardStr(currBoardState)}\n`)
 
-    // Write opponent move to file
-    const enemyMove = await computeEnemyMove(prevBoardState, currBoardState, currBoardImg)
-    fs.writeFileSync('./board.txt', new Uint8Array(Buffer.from(enemyMove)))
+    // If we lost, then exit
+    if (hasLost) {
+      // Print to the console our game state
+      console.log("Our AI has lost the shogi match!")
+      console.log(`\n${getBoardStr(currBoardState)}\n`)
+      fs.writeFileSync('./board.txt', new Uint8Array(Buffer.from(`${getBoardStr(prevBoardState)}\n\n${getBoardStr(currBoardState)}`)))
+
+      // Close program in 60 seconds
+      setTimeout(() => {
+        process.exit(1)
+      }, 60000)
+    } else {
+      // Otherwise, write opponent move to file
+      console.log(getBoardStr(currBoardState))
+      const enemyMove = await computeEnemyMove(prevBoardState, currBoardState, currBoardImg)
+      fs.writeFileSync('./board.txt', new Uint8Array(Buffer.from(enemyMove)))
+      fs.writeFileSync('./boardState.txt', new Uint8Array(Buffer.from(getBoardStr(currBoardState))))
+    }
   }
 }
 
@@ -246,16 +316,28 @@ async function computeEnemyMove(prev, curr, imgURL) {
   console.log("Coordinates that are different after the AI moved:")
   console.log(coords)
   
-  // Gets the piece that is on the first pair of coordinates (enemy piece moving foward means this function returns "O" cuz its blank)
-  const piece = getPiece(image, ...coords[0])
-  // console.log(`Piece from the coords "${coords[0].toString()}": ${piece}`)
-  if (piece === "O") {
-    // console.log("PIECE WAS AN O")
-    return getMoveStr(coords)
+  // If the enemy made no moves, then we tried inputting an invalid move
+  if (coords.length === 0) {
+    return "try again"
   } else {
-    // console.log("PIECE WAS NOT O")
-    return getMoveStr(coords.reverse())
+    // Gets the piece that is on the first pair of coordinates (enemy piece moving foward means this function returns "O" cuz its blank)
+    const piece = getPiece(image, ...coords[0])
+    console.log(`Piece from the coords "${coords[0].toString()}": ${piece}`)
+    
+    // If the `coords` array has one pair, then the opponent placed a piece. Otherwise, they moved a piece
+    if (coords.length === 1) {
+      return `${coords[0][0]} ${coords[0][1]} ${piece}`
+    } else {
+      if (piece === "O") {
+        // console.log("PIECE WAS AN O")
+        return getMoveStr(coords)
+      } else {
+        // console.log("PIECE WAS NOT O")
+        return getMoveStr(coords.reverse())
+      }    
+    }    
   }
+
 }
 
 /* Takes two pairs of coords and compiles a string in the format for our AI to parse */
