@@ -35,7 +35,7 @@ func (state ShogiState) updateCoords(coords []string) ShogiState {
 	for i := 0; i < len(state.pieces); i++ {
 		if state.pieces[i].x == currX && state.pieces[i].y == currY {
 			piece := newState.pieces[i].name
-			newState.board[newState.pieces[i].y][newState.pieces[i].x] = "h"
+			newState.board[newState.pieces[i].y][newState.pieces[i].x] = "O"
 			newState.board[finalY][finalX] = piece //update board
 			newState.pieces[i].x = finalX          //update piece
 			newState.pieces[i].y = finalY
@@ -91,6 +91,8 @@ func main() {
 		if state.IsGoal(player) {
 			fmt.Println("We won!")
 			break
+		} else if state.IsGoal(((player + 1) % 2) + 1) {
+			fmt.Println("We lost!")
 		}
 	}
 
