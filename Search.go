@@ -24,7 +24,7 @@ type ShogiState struct {
 }
 
 func (m Move) String() string {
-	s := fmt.Sprintf("%d %d %d %d\n", m.curr.x+1, m.curr.y+1, m.final.x+1, m.final.y+1)
+	s := fmt.Sprintf("%d %d %d %d", m.curr.x+1, m.curr.y+1, m.final.x+1, m.final.y+1)
 	return s
 }
 
@@ -250,8 +250,8 @@ func Succ(state ShogiState, player int) []ShogiState {
 					moves = []int{-1, 1, 0, 1, 1, 1, 0, -1, 1, 0, 0, -1}
 				}
 				for j := 0; j <= len(moves)-2; j += 2 {
-					NewX := state.pieces[j].x + moves[j]
-					NewY := state.pieces[j].y + moves[j+1]
+					NewX := state.pieces[i].x + moves[j]
+					NewY := state.pieces[i].y + moves[j+1]
 					NewState := MakeMove(state, player, NewX, NewY, i)
 					NewState.parent = &state
 					if !state.Equal(NewState) {
@@ -386,8 +386,8 @@ func Succ(state ShogiState, player int) []ShogiState {
 				var moves []int
 				moves = []int{-1, -1, 0, -1, 1, -1, -1, 1, 1, 1, 1, 0, -1, 0, 0, 1}
 				for j := 0; j <= len(moves)-2; j += 2 {
-					NewX := state.pieces[j].x + moves[j]
-					NewY := state.pieces[j].y + moves[j+1]
+					NewX := state.pieces[i].x + moves[j]
+					NewY := state.pieces[i].y + moves[j+1]
 					NewState := MakeMove(state, player, NewX, NewY, i)
 					NewState.parent = &state
 					if !state.Equal(NewState) {
@@ -422,8 +422,8 @@ func Succ(state ShogiState, player int) []ShogiState {
 				var moves []int
 				moves = []int{0, 1, -1, 0, 1, 0, 0, -1}
 				for j := 0; j <= len(moves)-2; j += 2 {
-					NewX := state.pieces[j].x + moves[j]
-					NewY := state.pieces[j].y + moves[j+1]
+					NewX := state.pieces[i].x + moves[j]
+					NewY := state.pieces[i].y + moves[j+1]
 					NewState := MakeMove(state, player, NewX, NewY, i)
 					NewState.parent = &state
 					if !state.Equal(NewState) {
@@ -458,8 +458,8 @@ func Succ(state ShogiState, player int) []ShogiState {
 				var moves []int
 				moves = []int{1, 1, -1, 1, 1, -1, -1, -1}
 				for j := 0; j <= len(moves)-2; j += 2 {
-					NewX := state.pieces[j].x + moves[j]
-					NewY := state.pieces[j].y + moves[j+1]
+					NewX := state.pieces[i].x + moves[j]
+					NewY := state.pieces[i].y + moves[j+1]
 					NewState := MakeMove(state, player, NewX, NewY, i)
 					NewState.parent = &state
 					if !state.Equal(NewState) {
@@ -547,7 +547,32 @@ func auxMiniMax(state ShogiState, player, depth int, max bool) int {
 	}
 }
 
-func MiniMax(state ShogiState, player, depth int) (Move, error) {
+func (m1 Move) MoveEqual(m2 Move) bool {
+	if m1.curr.x != m2.curr.x {
+		return false
+	}
+	if m1.curr.y != m2.curr.y {
+		return false
+	}
+	if m1.final.x != m2.final.x {
+		return false
+	}
+	if m1.final.y != m2.final.y {
+		return false
+	}
+	return true
+}
+
+func (state Move) isDup(history []Move) bool {
+	for i := 0; i < len(history); i++ {
+		if state.MoveEqual(history[i]) {
+			return true
+		}
+	}
+	return false
+}
+
+func MiniMax(state ShogiState, player, depth int, history []Move) (Move, error) {
 	//Totally untested, und highly dangerous! (waiting for Succ)
 	if state.IsGoal(player) {
 		return Move{}, fmt.Errorf("You won dufus! Email all your friends!")
@@ -557,14 +582,19 @@ func MiniMax(state ShogiState, player, depth int) (Move, error) {
 	var vals []int
 	var finalKids []ShogiState
 	for i := 0; i < len(kids); i++ {
-		_, err := diff(state, kids[i]) //rm duplicates
+		kdiff, err := diff(state, kids[i]) //rm duplicates
 		if err != nil {
 			continue
 		}
+		if kdiff.isDup(history) {
+			continue
+		}
+
 		// fmt.Println(k)
 		// fmt.Println(kids[i])
 		val := auxMiniMax(kids[i], player, depth-1, false)
 		vals = append(vals, val)
+		history = append(history, kdiff)
 		finalKids = append(finalKids, kids[i])
 	}
 

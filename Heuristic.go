@@ -37,12 +37,14 @@ var PieceValue = map[string]int{
 
 func h1(board [][]string) int {
 	p1Value := scan(board, "1")
-	return p1Value
+	p2Value := scan(board, "2")
+	return p1Value - p2Value
 }
 
 func h2(board [][]string) int {
 	p2Value := scan(board, "2")
-	return p2Value
+	p1Value := scan(board, "1")
+	return p2Value - p1Value
 }
 
 func scan(board [][]string, player string) int {

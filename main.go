@@ -35,7 +35,7 @@ func (state ShogiState) updateCoords(coords []string) ShogiState {
 	for i := 0; i < len(state.pieces); i++ {
 		if state.pieces[i].x == currX && state.pieces[i].y == currY {
 			piece := newState.pieces[i].name
-			newState.board[newState.pieces[i].y][newState.pieces[i].x] = "O"
+			newState.board[newState.pieces[i].y][newState.pieces[i].x] = "h"
 			newState.board[finalY][finalX] = piece //update board
 			newState.pieces[i].x = finalX          //update piece
 			newState.pieces[i].y = finalY
@@ -62,23 +62,32 @@ func main() {
 		parent: nil,
 	}
 	player := 2
-	searchDepth := 1
+	searchDepth := 2
+	var history []Move
+	// var oldData []byte
+	var data []byte
 
 	for {
 		fmt.Println(state)
-		m, err := MiniMax(state, player, searchDepth)
+		m, err := MiniMax(state, player, searchDepth, history)
 		if err != nil {
 			panic(err)
 		}
 		fmt.Println(m)
+		coords := strings.Split(m.String(), " ")
+		state = state.updateCoords(coords)
 		ioutil.WriteFile("./NodeScriptShogAI/move.txt", []byte(m.String()), 0644)
-		time.Sleep(time.Second)
-		data, err := ioutil.ReadFile("./NodeScriptShogAI/board.txt")
+
+		time.Sleep(1 * time.Second)
+
+		data, err = ioutil.ReadFile("./NodeScriptShogAI/board.txt")
 		if err != nil {
 			panic(err)
 		}
-		coords := strings.Split(string(data), " ")
+		coords = strings.Split(string(data), " ")
+		history = append(history, m)
 		state = state.updateCoords(coords)
+
 		if state.IsGoal(player) {
 			fmt.Println("We won!")
 			break
