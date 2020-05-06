@@ -84,6 +84,10 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println(string(data))
+		if string(data) == "try again" {
+			continue
+		}
 		coords = strings.Split(string(data), " ")
 		history = append(history, m)
 		state = state.updateCoords(coords)
