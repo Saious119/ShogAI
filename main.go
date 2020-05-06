@@ -88,7 +88,7 @@ func main() {
 	player := 2
 	searchDepth := 2
 	var history []Move
-	// var oldData []byte
+	var oldData []byte
 	var data []byte
 
 	for {
@@ -99,20 +99,28 @@ func main() {
 		}
 		fmt.Println(m)
 		coords := strings.Split(m.String(), " ")
-		state = state.updateCoords(coords)
 		ioutil.WriteFile("./NodeScriptShogAI/move.txt", []byte(m.String()), 0644)
 
 		time.Sleep(1 * time.Second)
 
-		data, err = ioutil.ReadFile("./NodeScriptShogAI/board.txt")
-		if err != nil {
-			fmt.Println("Failed to parse")
-			continue
+		for {
+			data, err = ioutil.ReadFile("./NodeScriptShogAI/board.txt")
+			if err != nil {
+				fmt.Println("Failed to parse")
+				continue
+			}
+			if string(data) == string(oldData) {
+				time.Sleep(100 * time.Millisecond)
+				continue
+			}
+			if string(data) == "try again" {
+				continue
+			}
+			fmt.Println(string(data))
+			oldData = append([]byte{}, data...)
+			break
 		}
-		fmt.Println(string(data))
-		if string(data) == "try again" {
-			continue
-		}
+		state = state.updateCoords(coords)
 		coords = strings.Split(string(data), " ")
 		history = append(history, m)
 		if len(coords) == 4 {
