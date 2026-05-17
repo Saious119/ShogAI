@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "chokidar": "^3.4.0",
-    "jimp": "^0.22.8",
+    "jimp": "^1.6.1",
     "puppeteer": "^3.0.2"
   }
 }
