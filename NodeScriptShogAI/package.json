@@ -11,6 +11,6 @@
   "dependencies": {
     "chokidar": "^3.4.0",
     "jimp": "^1.6.1",
-    "puppeteer": "^3.0.2"
+    "puppeteer": "^25.4.0"
   }
 }
